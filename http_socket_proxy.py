@@ -90,7 +90,10 @@ def main():
         # Connect to remote host
         host_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        host_sock.connect((request.headers['Host'], 80))
+        if 'Host' in request.headers.keys():
+            host_sock.connect((request.headers['Host'], 80))
+        else:
+            break
 
         # send request
         if (request.method() == "GET"):
@@ -104,8 +107,9 @@ def main():
         # compress image
         if 'Content-Type' in response.headers.keys():
             if response.headers['Content-Type'] == "image/png" \
-                or response.headers['Content-Type'] == "image/jpeg" \
-                    or response.headers['Content-Type'] == "image/jpg":
+                    or response.headers['Content-Type'] == "image/jpeg" \
+                or response.headers['Content-Type'] == "image/jpg"\
+                    or response.headers['Content-Type'] == "image/gif":
                 img = Image.open(BytesIO(response.data))
                 if img.size[0] > MAX_IMG_SIZE[0] or img.size[1] > MAX_IMG_SIZE[1]:
                     try:
