@@ -91,9 +91,14 @@ def main():
         host_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         if 'Host' in request.headers.keys():
-            host_sock.connect((request.headers['Host'], 80))
+            try:
+                host_sock.connect((request.headers['Host'], 80))
+            except Exception:
+                print("Can't connect")
+                continue
         else:
-            break
+            print("Can't find Host in headers")
+            continue
 
         # send request
         if (request.method() == "GET"):
